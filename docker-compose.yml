@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  rag-chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rag-chatbot-app
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    volumes:
+      - ./backend/data:/app/data
+    restart: unless-stopped

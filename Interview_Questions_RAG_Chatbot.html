@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview Questions — AI Document Search (RAG Chatbot) Project</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #7c3aed;
+      --brand-light: #a78bfa;
+      --bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+      --answer-bg: #f8fafc;
+      --section-accent: #7c3aed;
+      --green: #059669;
+      --blue: #2563eb;
+    }
+
+    @page {
+      size: A4;
+      margin: 20mm 18mm;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 11pt;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--bg);
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 30px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding-bottom: 28px;
+      border-bottom: 3px solid var(--brand);
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 22pt;
+      font-weight: 800;
+      color: var(--brand);
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+    .header .subtitle {
+      font-size: 12pt;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .header .project-name {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      color: white;
+      border-radius: 20px;
+      font-size: 10pt;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .header .meta {
+      margin-top: 12px;
+      font-size: 9pt;
+      color: var(--text-muted);
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 28px;
+      page-break-inside: avoid;
+    }
+    .section-title {
+      font-size: 14pt;
+      font-weight: 700;
+      color: var(--brand);
+      padding: 8px 14px;
+      background: #f5f3ff;
+      border-left: 4px solid var(--brand);
+      border-radius: 0 6px 6px 0;
+      margin-bottom: 18px;
+    }
+
+    /* Question Block */
+    .qa-block {
+      margin-bottom: 20px;
+      page-break-inside: avoid;
+    }
+    .question {
+      font-weight: 700;
+      font-size: 11pt;
+      color: var(--text);
+      padding: 8px 0 4px;
+      display: flex;
+      gap: 8px;
+    }
+    .q-num {
+      color: var(--brand);
+      font-weight: 800;
+      min-width: 28px;
+    }
+    .answer {
+      background: var(--answer-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 6px;
+      margin-left: 36px;
+      font-size: 10.5pt;
+      color: #334155;
+    }
+    .answer p { margin-bottom: 8px; }
+    .answer p:last-child { margin-bottom: 0; }
+    .answer ul, .answer ol {
+      padding-left: 20px;
+      margin-bottom: 8px;
+    }
+    .answer li { margin-bottom: 4px; }
+    .answer strong { color: #1e293b; }
+    .answer code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 9.5pt;
+      color: #7c3aed;
+      border: 1px solid #e2e8f0;
+    }
+    .answer pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px 14px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9pt;
+      line-height: 1.5;
+      margin: 8px 0;
+    }
+    .answer pre code {
+      background: none;
+      border: none;
+      color: inherit;
+      padding: 0;
+      font-size: inherit;
+    }
+    .answer .highlight {
+      background: #ede9fe;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 600;
+      color: #5b21b6;
+    }
+
+    /* Table */
+    .answer table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+      font-size: 10pt;
+    }
+    .answer th {
+      background: #f1f5f9;
+      text-align: left;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      font-weight: 600;
+      color: #475569;
+    }
+    .answer td {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 2px solid var(--border);
+      text-align: center;
+      font-size: 9pt;
+      color: var(--text-muted);
+    }
+
+    @media print {
+      body { padding: 0; max-width: 100%; }
+      .qa-block { page-break-inside: avoid; }
+      .section { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Interview Questions & Answers</h1>
+    <div class="subtitle">Full-Stack AI Project — Technical Deep Dive</div>
+    <div class="project-name">AI Document Search (RAG Chatbot)</div>
+    <div class="meta">Total Questions: 30 &nbsp;|&nbsp; Covers: Architecture, Backend, Frontend, LangChain, Vector Stores, Deployment</div>
+  </div>
+
+  <!-- ==================== SECTION 1 ==================== -->
+  <div class="section">
+    <div class="section-title">📋 Section 1 — Project Overview & Architecture</div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q1.</span> What is this project and what problem does it solve?</div>
+      <div class="answer">
+        <p>This is an <strong>AI Document Search (RAG Chatbot)</strong> — a full-stack application that lets users upload PDF documents and ask natural language questions about them. The AI retrieves relevant text chunks and generates accurate answers with <strong>inline citations</strong> (e.g., [Doc 1], [Doc 2]).</p>
+        <p><strong>Problem it solves:</strong> Regular AI chatbots can't access your private documents and may hallucinate. RAG (Retrieval-Augmented Generation) grounds the AI's responses in your actual uploaded data, eliminating hallucination and providing verifiable, cited answers.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q2.</span> Explain the RAG (Retrieval-Augmented Generation) architecture used in this project.</div>
+      <div class="answer">
+        <p>RAG is a two-phase architecture:</p>
+        <ol>
+          <li><strong>Retrieval Phase:</strong> The user's query is converted into a vector embedding. This embedding is compared against pre-indexed document chunk embeddings using cosine similarity to find the top-K most relevant chunks.</li>
+          <li><strong>Generation Phase:</strong> The retrieved text chunks are injected into the LLM's prompt as context. The LLM then generates a response based <em>only</em> on the provided context, with citations referencing specific source documents and pages.</li>
+        </ol>
+        <p>This ensures the AI's answers are <strong>grounded in real data</strong> rather than relying solely on its training knowledge.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q3.</span> What is the complete tech stack of this project?</div>
+      <div class="answer">
+        <table>
+          <tr><th>Layer</th><th>Technology</th></tr>
+          <tr><td>Backend Framework</td><td>FastAPI (Python)</td></tr>
+          <tr><td>Server</td><td>Uvicorn (ASGI)</td></tr>
+          <tr><td>AI Orchestration</td><td>LangChain</td></tr>
+          <tr><td>LLM Providers</td><td>OpenAI (GPT-4o-mini), Google Gemini (1.5 Flash)</td></tr>
+          <tr><td>Embeddings</td><td>OpenAI text-embedding-3-small, Google text-embedding-004</td></tr>
+          <tr><td>PDF Parsing</td><td>PyPDF</td></tr>
+          <tr><td>Vector Store (Local)</td><td>FAISS + NumPy fallback</td></tr>
+          <tr><td>Vector Store (Cloud)</td><td>Pinecone</td></tr>
+          <tr><td>Frontend</td><td>React 19, TypeScript, Vite 8</td></tr>
+          <tr><td>Styling</td><td>Tailwind CSS 4 (Glassmorphism theme)</td></tr>
+          <tr><td>Deployment</td><td>Docker (multi-stage build)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q4.</span> How does the end-to-end flow work when a user uploads a PDF and asks a question?</div>
+      <div class="answer">
+        <ol>
+          <li><strong>Upload:</strong> User drops a PDF → FastAPI receives the file bytes</li>
+          <li><strong>Extraction:</strong> <code>PyPDF</code> extracts text page-by-page</li>
+          <li><strong>Chunking:</strong> <code>RecursiveCharacterTextSplitter</code> splits text into ~1000-character chunks with 200-char overlap</li>
+          <li><strong>Embedding:</strong> Each chunk is converted to a vector using OpenAI/Gemini embedding model</li>
+          <li><strong>Indexing:</strong> Vectors are stored in FAISS (local) or Pinecone (cloud)</li>
+          <li><strong>Query:</strong> User asks a question → query is embedded → top-4 similar chunks are retrieved</li>
+          <li><strong>Generation:</strong> Retrieved chunks + query are sent to GPT-4o-mini/Gemini → answer with citations is returned</li>
+          <li><strong>Display:</strong> React frontend renders the markdown answer with expandable citation cards</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q5.</span> How did you merge the frontend and backend into a single deployment?</div>
+      <div class="answer">
+        <p>The React frontend is built using <code>vite build</code> which outputs static files (HTML, CSS, JS) to the <code>dist/</code> folder. These files are copied into the FastAPI <code>backend/static/</code> directory. FastAPI then serves them using:</p>
+        <pre><code>from fastapi.staticfiles import StaticFiles
+app.mount("/", StaticFiles(directory="static", html=True), name="static")</code></pre>
+        <p>The API URL in the frontend is set to <code>''</code> (empty string), so all <code>fetch('/api/...')</code> calls are relative to the same origin. This way, a <strong>single Python server on port 8000</strong> serves both the API and the UI.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 2 ==================== -->
+  <div class="section">
+    <div class="section-title">🐍 Section 2 — Backend (Python / FastAPI)</div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q6.</span> Why did you choose FastAPI over Flask or Django?</div>
+      <div class="answer">
+        <ul>
+          <li><strong>Async support:</strong> FastAPI is built on ASGI with native <code>async/await</code>, essential for non-blocking file uploads and API calls to LLM providers.</li>
+          <li><strong>Automatic docs:</strong> Generates Swagger UI at <code>/docs</code> and ReDoc at <code>/redoc</code> automatically.</li>
+          <li><strong>Pydantic validation:</strong> Request/response models are validated at the framework level using type hints.</li>
+          <li><strong>Performance:</strong> One of the fastest Python frameworks, comparable to Node.js and Go.</li>
+          <li><strong>Lightweight:</strong> No ORM, admin panel, or template engine bloat — perfect for an API-only backend.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q7.</span> Explain the API endpoints in your backend.</div>
+      <div class="answer">
+        <table>
+          <tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr>
+          <tr><td>GET</td><td><code>/api/health</code></td><td>Health check — returns <code>{"status": "healthy"}</code></td></tr>
+          <tr><td>POST</td><td><code>/api/upload</code></td><td>Upload PDFs, chunk text, generate embeddings, store in vector DB</td></tr>
+          <tr><td>GET</td><td><code>/api/documents</code></td><td>List all indexed document filenames</td></tr>
+          <tr><td>DELETE</td><td><code>/api/documents/{filename}</code></td><td>Delete a document's chunks from the vector store</td></tr>
+          <tr><td>POST</td><td><code>/api/chat</code></td><td>Accept a query, retrieve relevant chunks, generate AI answer with citations</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q8.</span> How does the PDF processing pipeline work?</div>
+      <div class="answer">
+        <p>The <code>PDFProcessor</code> class handles two stages:</p>
+        <ol>
+          <li><strong>Text Extraction:</strong> Uses <code>PyPDF.PdfReader</code> to read the uploaded bytes, iterates through each page, extracts text, and creates <code>Document</code> objects with metadata (source filename, page number).</li>
+          <li><strong>Chunking:</strong> Uses LangChain's <code>RecursiveCharacterTextSplitter</code> with:
+            <ul>
+              <li><code>chunk_size=1000</code> characters</li>
+              <li><code>chunk_overlap=200</code> characters (ensures context isn't lost at chunk boundaries)</li>
+              <li>Separators: <code>["\n\n", "\n", " ", ""]</code> (splits at paragraphs first, then lines, then words)</li>
+            </ul>
+          </li>
+        </ol>
+        <p>The metadata (source, page) propagates through chunking so citations remain accurate.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q9.</span> How do you handle API keys securely? They're passed in headers — is that safe?</div>
+      <div class="answer">
+        <p>API keys are passed via custom HTTP headers (<code>x-api-key</code>, <code>x-pinecone-key</code>). This is a valid approach because:</p>
+        <ul>
+          <li>Headers are <strong>encrypted in transit</strong> when using HTTPS.</li>
+          <li>They are <strong>not logged in URL access logs</strong> (unlike query parameters).</li>
+          <li>Keys are stored in the browser's <code>localStorage</code> on the client side — they never touch the backend's filesystem or database.</li>
+        </ul>
+        <p><strong>For production improvements:</strong> Use environment variables on the server, implement OAuth2 or JWT-based auth, and use a secrets manager like AWS Secrets Manager or HashiCorp Vault.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q10.</span> What is CORS and why is it configured in this project?</div>
+      <div class="answer">
+        <p><strong>CORS (Cross-Origin Resource Sharing)</strong> is a browser security mechanism that blocks requests from one origin (e.g., <code>localhost:5173</code>) to another (e.g., <code>localhost:8000</code>).</p>
+        <p>During development, the React frontend runs on port 5173 and the FastAPI backend on port 8000 — these are different origins. Without CORS middleware, all API calls from the frontend would be blocked by the browser.</p>
+        <pre><code>app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (development only)
+    allow_methods=["*"],
+    allow_headers=["*"],
+)</code></pre>
+        <p><strong>In production:</strong> Replace <code>"*"</code> with specific allowed origins like <code>["https://yourdomain.com"]</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 3 ==================== -->
+  <div class="section">
+    <div class="section-title">🧠 Section 3 — LangChain, Embeddings & LLM</div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q11.</span> What is LangChain and why is it used here?</div>
+      <div class="answer">
+        <p><strong>LangChain</strong> is a Python framework for building applications powered by LLMs. In this project, it provides:</p>
+        <ul>
+          <li><strong>Document abstraction:</strong> The <code>Document</code> class that stores text + metadata (source, page).</li>
+          <li><strong>Text splitting:</strong> <code>RecursiveCharacterTextSplitter</code> for intelligent chunking.</li>
+          <li><strong>Embedding wrappers:</strong> Unified API for OpenAI and Google embedding models.</li>
+          <li><strong>LLM wrappers:</strong> <code>ChatOpenAI</code> and <code>ChatGoogleGenerativeAI</code> with consistent interfaces.</li>
+          <li><strong>Message types:</strong> <code>SystemMessage</code> and <code>HumanMessage</code> for prompt construction.</li>
+          <li><strong>FAISS integration:</strong> <code>langchain-community</code> provides the FAISS vector store wrapper.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q12.</span> What are embeddings and how are they used in this project?</div>
+      <div class="answer">
+        <p><strong>Embeddings</strong> are dense numerical vector representations of text that capture semantic meaning. Similar texts have similar vectors (high cosine similarity).</p>
+        <p><strong>In this project:</strong></p>
+        <ol>
+          <li>Each document chunk is converted to an embedding vector (e.g., 1536 dimensions for OpenAI's <code>text-embedding-3-small</code>).</li>
+          <li>These vectors are stored in the vector database.</li>
+          <li>When a user asks a question, the query is also embedded into the same vector space.</li>
+          <li>The system finds the top-K chunks whose vectors are closest to the query vector (cosine similarity).</li>
+        </ol>
+        <p>This is fundamentally how <strong>semantic search</strong> works — it understands meaning, not just keywords.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q13.</span> How is the LLM prompt engineered in this project?</div>
+      <div class="answer">
+        <p>The prompt uses a <strong>System + Human message pattern:</strong></p>
+        <ul>
+          <li><strong>SystemMessage:</strong> Contains the RAG instructions — answer only from context, cite sources as [Doc 1], use markdown formatting, and admit when information is not available.</li>
+          <li><strong>HumanMessage:</strong> Contains the user's actual query.</li>
+        </ul>
+        <p>The context blocks are formatted with labels like <code>[Doc 1] Source: report.pdf (Page 3)</code> so the LLM can reference them in citations. The <code>temperature=0.2</code> keeps responses factual and deterministic.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q14.</span> Why does the project support both OpenAI and Google Gemini? How is switching implemented?</div>
+      <div class="answer">
+        <p><strong>Why:</strong> Provides flexibility — users can choose based on cost, availability, or preference. OpenAI is industry-standard but paid; Gemini offers a generous free tier.</p>
+        <p><strong>How:</strong> The <code>provider</code> parameter (passed via the <code>x-provider</code> header) controls which models are instantiated. Both <code>_get_llm()</code> and <code>_get_embeddings_model()</code> use a simple <code>if/else</code> to instantiate the correct LangChain wrapper. The interface is identical thanks to LangChain's unified abstraction — both return objects with the same <code>.invoke()</code> and <code>.embed_documents()</code> methods.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q15.</span> What is chunk overlap and why is it set to 200?</div>
+      <div class="answer">
+        <p><strong>Chunk overlap</strong> means adjacent chunks share some text at their boundaries. With <code>chunk_size=1000</code> and <code>chunk_overlap=200</code>:</p>
+        <ul>
+          <li>Chunk 1: characters 0–1000</li>
+          <li>Chunk 2: characters 800–1800 (overlaps 200 chars with chunk 1)</li>
+          <li>Chunk 3: characters 1600–2600 (overlaps 200 chars with chunk 2)</li>
+        </ul>
+        <p><strong>Why 200:</strong> If a key sentence falls exactly at a chunk boundary, without overlap it would be split across two chunks and neither chunk alone would have the full context. The 200-char overlap ensures important sentences near boundaries appear in at least one complete chunk. 200 is roughly 1-2 sentences — enough to preserve context without creating excessive duplication.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 4 ==================== -->
+  <div class="section">
+    <div class="section-title">🗄️ Section 4 — Vector Store & Search</div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q16.</span> What is FAISS and how is it used in this project?</div>
+      <div class="answer">
+        <p><strong>FAISS (Facebook AI Similarity Search)</strong> is a library by Meta for efficient similarity search over dense vectors. In this project:</p>
+        <ul>
+          <li>Document chunk embeddings are indexed using <code>FAISS.from_documents()</code>.</li>
+          <li>The index is saved locally to disk using <code>save_local()</code> and loaded with <code>load_local()</code>.</li>
+          <li>Queries use <code>similarity_search_with_score()</code> which returns the top-K matching documents with their L2 distance scores.</li>
+        </ul>
+        <p>FAISS is optimized for speed — it can search millions of vectors in milliseconds using techniques like product quantization and inverted file indexes.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q17.</span> Why does the project have a NumPy fallback vector store?</div>
+      <div class="answer">
+        <p>FAISS requires C++ compilation and platform-specific binaries (<code>faiss-cpu</code>). It can fail to install on certain systems (e.g., some Windows configs, ARM architectures). The <code>SimpleNumPyVectorStore</code> is a pure-Python fallback that:</p>
+        <ul>
+          <li>Uses <code>numpy.dot()</code> for cosine similarity calculations</li>
+          <li>Stores documents and embeddings in Python lists</li>
+          <li>Serializes to disk using <code>pickle</code></li>
+          <li>Works on any system that has NumPy installed</li>
+        </ul>
+        <p>The project uses a <code>try/except</code> on import — if FAISS isn't available, it falls back to the NumPy store transparently.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q18.</span> Explain cosine similarity and how it's implemented in the NumPy store.</div>
+      <div class="answer">
+        <p><strong>Cosine similarity</strong> measures the angle between two vectors (0 = perpendicular/unrelated, 1 = identical direction/meaning).</p>
+        <p>Formula: <code>cos(θ) = (A · B) / (||A|| × ||B||)</code></p>
+        <p><strong>Implementation in the project:</strong></p>
+        <pre><code>q = np.array(query_embedding)
+matrix = np.array(self.embeddings)
+scores = np.dot(matrix, q) / (matrix_norm * q_norm)
+top_k_indices = np.argsort(scores)[::-1][:k]</code></pre>
+        <p>It computes the dot product of the query vector against all stored vectors, normalizes by their magnitudes, then sorts to get the top-K highest-scoring matches.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q19.</span> What is Pinecone and when would you use it instead of FAISS?</div>
+      <div class="answer">
+        <table>
+          <tr><th>Feature</th><th>FAISS (Local)</th><th>Pinecone (Cloud)</th></tr>
+          <tr><td>Storage</td><td>Local disk</td><td>Managed cloud</td></tr>
+          <tr><td>Scalability</td><td>Limited by RAM</td><td>Billions of vectors</td></tr>
+          <tr><td>Multi-user</td><td>Single machine</td><td>Shared across services</td></tr>
+          <tr><td>Setup</td><td>Zero config</td><td>Requires API key + index</td></tr>
+          <tr><td>Cost</td><td>Free</td><td>Free tier, then paid</td></tr>
+          <tr><td>Best for</td><td>Development, single-user</td><td>Production, multi-user apps</td></tr>
+        </table>
+        <p>Use Pinecone when you need <strong>persistent, scalable, cloud-hosted</strong> vector search accessible from multiple servers.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q20.</span> How does document deletion work in the vector store?</div>
+      <div class="answer">
+        <p>The <code>delete_document()</code> method filters by the <code>source</code> metadata field:</p>
+        <ol>
+          <li>Iterates through all stored documents and embeddings in the NumPy store</li>
+          <li>Keeps only those whose <code>metadata["source"]</code> does NOT match the filename to delete</li>
+          <li>Saves the filtered list back to disk</li>
+          <li>If FAISS index exists, deletes the entire FAISS directory (since FAISS doesn't support metadata-based deletion natively) — it rebuilds lazily on the next query/upload</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 5 ==================== -->
+  <div class="section">
+    <div class="section-title">⚛️ Section 5 — Frontend (React / TypeScript)</div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q21.</span> Describe the frontend architecture and component structure.</div>
+      <div class="answer">
+        <p>The frontend follows a <strong>container + presentational component</strong> pattern:</p>
+        <ul>
+          <li><strong><code>App.tsx</code></strong> (Container): Holds all state (config, documents, messages), handles API calls, and passes data down as props.</li>
+          <li><strong><code>Sidebar.tsx</code></strong> (Presentational): Displays configuration controls (provider toggle, API key, vector storage, PDF upload zone, document list).</li>
+          <li><strong><code>ChatArea.tsx</code></strong> (Presentational): Renders the chat interface — messages, markdown rendering, citation cards, and the input form.</li>
+        </ul>
+        <p>State flows <strong>top-down</strong> via props; events flow <strong>bottom-up</strong> via callback functions.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q22.</span> How does the drag-and-drop PDF upload work?</div>
+      <div class="answer">
+        <p>The upload zone uses the <strong>HTML5 Drag and Drop API</strong>:</p>
+        <ol>
+          <li><code>onDragEnter</code> / <code>onDragOver</code> → Sets <code>dragActive=true</code> to highlight the drop zone</li>
+          <li><code>onDragLeave</code> → Resets the highlight</li>
+          <li><code>onDrop</code> → Captures <code>e.dataTransfer.files</code>, calls <code>onUpload(files)</code></li>
+          <li>The upload function creates a <code>FormData</code>, appends files, and sends a <code>POST /api/upload</code> with API config headers</li>
+          <li>A hidden <code>&lt;input type="file"&gt;</code> via <code>useRef</code> is also available for click-to-browse</li>
+        </ol>
+        <p>The zone visually responds with a purple border highlight during drag, and shows a spinner with "Processing PDF... Chunking & embedding" during upload.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q23.</span> How is the chat state managed? Why not use Redux or Zustand?</div>
+      <div class="answer">
+        <p>All state is managed using React's built-in <code>useState</code> hooks in the <code>App</code> component:</p>
+        <ul>
+          <li><code>messages</code>: Array of <code>{role, content, citations}</code> objects</li>
+          <li><code>isLoadingChat</code>: Boolean to show the typing indicator</li>
+          <li>Config states (<code>provider</code>, <code>apiKey</code>, etc.) are persisted to <code>localStorage</code></li>
+        </ul>
+        <p><strong>Why no Redux/Zustand:</strong> The app has a simple, tree-shaped data flow with only ~10 state variables and 3 components. Adding a state management library would be over-engineering — React's native hooks handle this elegantly with zero boilerplate.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q24.</span> What is the glassmorphism design pattern used in the UI?</div>
+      <div class="answer">
+        <p><strong>Glassmorphism</strong> is a modern UI design trend that creates a frosted glass effect using:</p>
+        <ul>
+          <li><code>backdrop-filter: blur(16px)</code> — blurs the background behind the element</li>
+          <li>Semi-transparent backgrounds: <code>rgba(18, 20, 29, 0.55)</code></li>
+          <li>Subtle borders: <code>border: 1px solid rgba(255, 255, 255, 0.05)</code></li>
+          <li>Layered radial gradients on the body for depth</li>
+        </ul>
+        <p>The project defines reusable CSS classes: <code>.glass</code>, <code>.glass-panel</code>, <code>.glass-card</code>, and <code>.glass-input</code> for consistent application across components.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q25.</span> How does the markdown rendering and citation system work in the chat?</div>
+      <div class="answer">
+        <p>AI responses are rendered using the <code>react-markdown</code> library, which converts markdown (bold, lists, code blocks, headings) into styled HTML inside a <code>.prose</code> container with custom CSS.</p>
+        <p>Citations are handled as a separate expandable section below each AI message:</p>
+        <ul>
+          <li>The backend returns <code>sources</code> array with <code>{id, document, page, text}</code> for each chunk</li>
+          <li>A collapsible panel shows "Source Citations (N)" with a toggle button</li>
+          <li>Each citation card displays the document name, page number, and the exact text excerpt used</li>
+          <li>State is tracked via <code>expandedCitations</code> — a Record mapping message index to boolean</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 6 ==================== -->
+  <div class="section">
+    <div class="section-title">🐳 Section 6 — Deployment & DevOps</div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q26.</span> Explain the Docker multi-stage build in this project.</div>
+      <div class="answer">
+        <p>The Dockerfile uses <strong>two stages</strong> to minimize the final image size:</p>
+        <ol>
+          <li><strong>Stage 1 — Frontend Builder</strong> (<code>node:20-alpine</code>): Installs npm dependencies, runs <code>npm run build</code>, produces the <code>dist/</code> output. This stage is discarded after the build.</li>
+          <li><strong>Stage 2 — Backend Runtime</strong> (<code>python:3.10-slim</code>): Installs Python dependencies, copies backend code, then copies the built frontend from Stage 1 into <code>./static</code>.</li>
+        </ol>
+        <p>Result: The final image contains only the Python runtime + compiled frontend assets — no Node.js, no <code>node_modules</code>, no source TypeScript files.</p>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q27.</span> How would you deploy this to production?</div>
+      <div class="answer">
+        <ul>
+          <li><strong>Cloud Platforms:</strong> Deploy the Docker container to AWS ECS/Fargate, Google Cloud Run, Azure Container Instances, or Railway/Render.</li>
+          <li><strong>Environment:</strong> Set API keys via environment variables (not headers) using a secrets manager.</li>
+          <li><strong>HTTPS:</strong> Use a reverse proxy (Nginx/Caddy) or cloud load balancer for SSL termination.</li>
+          <li><strong>CORS:</strong> Restrict <code>allow_origins</code> to your specific domain.</li>
+          <li><strong>Vector Store:</strong> Use Pinecone (cloud) instead of FAISS (local) for persistence across container restarts.</li>
+          <li><strong>Scaling:</strong> Use horizontal scaling with a shared vector store; ensure the app is stateless.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q28.</span> What testing strategy is used in this project?</div>
+      <div class="answer">
+        <p>The project uses Python's <code>unittest</code> framework with <code>unittest.mock</code> for mocking:</p>
+        <ul>
+          <li><strong>test_pdf_processing_chunks:</strong> Verifies that the text splitter produces chunks with correct metadata.</li>
+          <li><strong>test_simple_numpy_vector_store:</strong> Tests the NumPy fallback store — adds documents with mock embeddings, queries, and verifies the correct document is returned with high similarity.</li>
+          <li><strong>test_vector_manager_add_and_search:</strong> Mocks the embeddings model using <code>@patch</code>, tests end-to-end add + search + list operations.</li>
+        </ul>
+        <p>Mock embeddings avoid real API calls, making tests <strong>fast, free, and deterministic</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 7 ==================== -->
+  <div class="section">
+    <div class="section-title">🔥 Section 7 — Advanced / Tricky Questions</div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q29.</span> What are the limitations of this RAG system and how would you improve it?</div>
+      <div class="answer">
+        <table>
+          <tr><th>Limitation</th><th>Improvement</th></tr>
+          <tr><td>Only supports PDFs</td><td>Add support for DOCX, TXT, CSV, HTML using LangChain's document loaders</td></tr>
+          <tr><td>No conversation memory</td><td>Add chat history to the prompt or use LangChain's <code>ConversationBufferMemory</code></td></tr>
+          <tr><td>Fixed chunk size</td><td>Use semantic chunking or dynamically adjust based on document structure</td></tr>
+          <tr><td>No user authentication</td><td>Add JWT-based auth, per-user document isolation</td></tr>
+          <tr><td>Retrieval may miss context</td><td>Use hybrid search (keyword BM25 + semantic), or re-ranking with a cross-encoder</td></tr>
+          <tr><td>No streaming responses</td><td>Use Server-Sent Events (SSE) for token-by-token streaming from the LLM</td></tr>
+          <tr><td>Single query retrieval</td><td>Implement multi-query retrieval or HyDE (Hypothetical Document Embeddings)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="qa-block">
+      <div class="question"><span class="q-num">Q30.</span> If you had to scale this to handle 1 million documents, what changes would you make?</div>
+      <div class="answer">
+        <ul>
+          <li><strong>Vector Store:</strong> Replace FAISS with <strong>Pinecone, Weaviate, or Qdrant</strong> (cloud-managed, distributed).</li>
+          <li><strong>Async Processing:</strong> Use a <strong>task queue (Celery + Redis)</strong> for PDF processing — uploads return immediately, processing happens in background workers.</li>
+          <li><strong>Chunking:</strong> Pre-compute and cache embeddings; use <strong>batch embedding APIs</strong> instead of per-document calls.</li>
+          <li><strong>Database:</strong> Add <strong>PostgreSQL</strong> for document metadata (user ownership, upload dates, tags).</li>
+          <li><strong>Caching:</strong> Cache frequent queries and their results using <strong>Redis</strong>.</li>
+          <li><strong>Load Balancing:</strong> Run multiple FastAPI instances behind an <strong>Nginx load balancer</strong> or use <strong>Kubernetes</strong>.</li>
+          <li><strong>Observability:</strong> Add <strong>logging (ELK stack)</strong>, <strong>metrics (Prometheus/Grafana)</strong>, and <strong>tracing (OpenTelemetry)</strong> for monitoring.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p><strong>AI Document Search (RAG Chatbot)</strong> — Interview Preparation Guide</p>
+    <p>30 Questions covering Full-Stack Architecture, Backend, Frontend, AI/ML, and Deployment</p>
+  </div>
+
+</body>
+</html>
