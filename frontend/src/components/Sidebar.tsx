@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   FolderOpen, 
   Settings, 
@@ -13,6 +13,8 @@ import {
   EyeOff,
   AlertCircle
 } from 'lucide-react';
+
+const BACKEND_API_URL = import.meta.env.VITE_API_URL || '';
 
 interface SidebarProps {
   provider: 'openai' | 'google';
@@ -52,8 +54,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [showPcKey, setShowPcKey] = useState<boolean>(false);
   const [dragActive, setDragActive] = useState<boolean>(false);
   const [deletingDoc, setDeletingDoc] = useState<string | null>(null);
+  const [backendStatus, setBackendStatus] = useState<'online' | 'offline' | 'checking'>('checking');
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Health check: ping /api/health on mount and every 30 seconds
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const response = await fetch(`${BACKEND_API_URL}/api/health`, { signal: AbortSignal.timeout(5000) });
+        setBackendStatus(response.ok ? 'online' : 'offline');
+      } catch {
+        setBackendStatus('offline');
+      }
+    };
+
+    checkHealth();
+    const interval = setInterval(checkHealth, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -94,6 +113,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       setDeletingDoc(null);
     }
   };
+
+  const statusConfig = {
+    online: { color: 'bg-emerald-500', label: 'Online', animate: 'animate-pulse' },
+    offline: { color: 'bg-rose-500', label: 'Offline', animate: '' },
+    checking: { color: 'bg-amber-500', label: 'Checking...', animate: 'animate-pulse' },
+  };
+  const status = statusConfig[backendStatus];
 
   return (
     <div className="w-80 h-full flex flex-col glass-panel select-none">
@@ -367,8 +393,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-4 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-500">
         <span>Backend Status</span>
         <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-slate-400 font-medium">Online</span>
+          <span className={`w-2 h-2 rounded-full ${status.color} ${status.animate}`} />
+          <span className="text-slate-400 font-medium">{status.label}</span>
         </div>
       </div>
     </div>

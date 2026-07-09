@@ -170,7 +170,7 @@ class VectorStoreManager:
                     
                     self.faiss_store.save_local(self.faiss_db_path)
                 except Exception as e:
-                    print(f"Failed to update FAISS store: {e}. Falling back to NumPy store only.")
+                    print(f"Failed to update FAISS store: {e!r}. Falling back to NumPy store only.")
             
             return True
 
@@ -226,7 +226,7 @@ class VectorStoreManager:
                         # We return as a list of Tuple[Document, float]
                         return self.faiss_store.similarity_search_with_score(query, k=k)
                 except Exception as e:
-                    print(f"FAISS search failed: {e}. Falling back to NumPy store.")
+                    print(f"FAISS search failed: {e!r}. Falling back to NumPy store.")
             
             # NumPy fallback search
             return self.local_numpy_store.similarity_search_by_vector(query_embedding, k=k)
@@ -253,22 +253,15 @@ class VectorStoreManager:
         
         # If FAISS was present, we simply reconstruct it from the remaining documents
         # since standard FAISS doesn't support easy metadata-based deletions.
+        # We invalidate the FAISS index entirely and let it lazy-rebuild on next upload/query.
         if FAISS_AVAILABLE and os.path.exists(self.faiss_db_path):
+            import shutil
             try:
-                import shutil
-                if os.path.exists(self.faiss_db_path):
-                    shutil.rmtree(self.faiss_db_path)
-                self.faiss_store = None
-                
-                # Rebuild if documents remain
-                if self.local_numpy_store.documents:
-                    # We can lazy rebuild or build on next query. We will rebuild here
-                    # using standard fake/mock embeddings or wait until a query comes.
-                    # Since we don't have the API key in the delete call directly,
-                    # we let it lazy rebuild when the next query/upload happens.
-                    pass
+                shutil.rmtree(self.faiss_db_path)
             except Exception as e:
-                print(f"Error resetting FAISS index: {e}")
+                print(f"Error removing FAISS index directory: {e!r}")
+            # Always clear the in-memory reference so stale data is never served
+            self.faiss_store = None
                 
         return deleted_count > 0
 
