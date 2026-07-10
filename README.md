@@ -2,14 +2,6 @@
 
 A full-stack **Retrieval-Augmented Generation (RAG)** chatbot that lets you upload PDF documents, index them into a vector store, and ask natural-language questions — with **inline citations** pulled directly from source pages.
 
-<p align="center">
-  <a href="https://rag-chatbot-ipcf.onrender.com" target="_blank">
-    <img src="https://img.shields.io/badge/🚀_Live_Demo-rag--chatbot--ipcf.onrender.com-7c3aed?style=for-the-badge&labelColor=1e1e2e" alt="Live Demo" />
-  </a>
-</p>
-
-> **🔗 Try it live:** [https://rag-chatbot-ipcf.onrender.com](https://rag-chatbot-ipcf.onrender.com)
-
 ---
 
 ## ✨ Features
@@ -91,11 +83,9 @@ System Prompt + Retrieved Chunks + User Query ──► LLM ──► Cited Answ
 
 ## 📖 How to Use It
 
-### Using the Live App
+### Using the App
 
-1. **Open the app** → [https://rag-chatbot-ipcf.onrender.com](https://rag-chatbot-ipcf.onrender.com)
-
-2. **Configure your API key** (required):
+1. **Configure your API key** (required):
    - In the left sidebar, choose your AI provider — **OpenAI** or **Google Gemini**
    - Paste your API key in the input field
    - Your key is stored **locally in your browser** (never sent to our server, only forwarded to the AI provider's API)
@@ -117,8 +107,6 @@ System Prompt + Retrieved Chunks + User Query ──► LLM ──► Cited Answ
    - *"Are there any specific dates or figures?"*
 
 > **💡 Tip:** You can upload multiple PDFs and ask questions that span across all of them. The AI will pull relevant context from whichever document is most relevant.
-
-> **⚠️ Note:** The live demo runs on Render's free tier. The first load may take ~30 seconds if the server has spun down due to inactivity.
 
 ---
 
@@ -189,7 +177,7 @@ python -m unittest tests.test_rag -v
 | **Embeddings** | OpenAI `text-embedding-3-small`, Google `text-embedding-004` |
 | **Vector DB** | FAISS (local), NumPy fallback, Pinecone (cloud) |
 | **PDF Processing** | pypdf, LangChain RecursiveCharacterTextSplitter |
-| **Deployment** | Docker, Render |
+| **Deployment** | Docker |
 | **UI Design** | Glassmorphism, Lucide icons, Google Fonts (Inter, Outfit) |
 
 ---
@@ -216,7 +204,6 @@ python -m unittest tests.test_rag -v
 │   └── package.json
 ├── Dockerfile                  # Multi-stage build
 ├── docker-compose.yml          # Container orchestration
-├── render.yaml                 # Render deployment config
 └── README.md
 ```
 
